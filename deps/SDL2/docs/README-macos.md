@@ -147,13 +147,13 @@ there are some more things you should do before shipping your product...
    achieve that by linking against the libraries listed by
 
    ```bash
-   sdl-config --static-libs
+   sdl-config --static-deps
    ```
 
    instead of those listed by
 
    ```bash
-   sdl-config --libs
+   sdl-config --deps
    ```
 
    Depending on how exactly SDL is integrated into your build systems, the
