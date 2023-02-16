@@ -1,4 +1,1 @@
-libs/*.txt linguist-vendored
-libs/*.cpp linguist-vendored
-libs/*.h   linguist-vendored
-libs/*.c   linguist-vendored
+libs/* linguist-vendored
