@@ -114,37 +114,36 @@ void PointApplyMatrix(vec3& PointIn, vec3& PointOut, Matrix& matrix) {
         PointOut.x /= w; PointOut.y /= w; PointOut.z /= w;
 }
 
-void DrawLine(SDL_Renderer* Renderer, double x1, double y1, double x2, double y2) {
-    SDL_RenderDrawLine(Renderer, (int)(x1), (int)(y1), (int)(x2), (int)(y2));
-}
-
-void DrawTriangle(SDL_Renderer* Renderer, Triangle& triangle) {
-    DrawLine(Renderer, triangle.m_aPoints[0].x, triangle.m_aPoints[0].y, triangle.m_aPoints[1].x, triangle.m_aPoints[1].y);
-    DrawLine(Renderer, triangle.m_aPoints[1].x, triangle.m_aPoints[1].y, triangle.m_aPoints[2].x, triangle.m_aPoints[2].y);
-    DrawLine(Renderer, triangle.m_aPoints[2].x, triangle.m_aPoints[2].y, triangle.m_aPoints[0].x, triangle.m_aPoints[0].y);
-}
+// void DrawLine(SDL_Renderer* renderer, double x1, double y1, double x2, double y2) {
+//     SDL_RenderDrawLine(renderer, (int)(x1), (int)(y1), (int)(x2), (int)(y2));
+// }
 
 double GetDistance(vec2 Vector) {
     return std::sqrt(std::pow(Vector.x, 2) + std::pow(Vector.y, 2));
 }
 
 double GetDistance(vec2 Point1, vec2 Point2) {
-    return sqrt(pow(Point2.x - Point1.x, 2) + pow(Point2.y - Point1.y, 2));
+    return std::sqrt(std::pow(Point2.x - Point1.x, 2) + std::pow(Point2.y - Point1.y, 2));
 }
 
-//std::vector<int> Interpolate(const vec2& HigherPoint, const vec2& LowerPoint, bool debug) {
-//    std::vector<int> xCoords;
-//    vec2 Vector = { LowerPoint.x - HigherPoint.x, LowerPoint.y - HigherPoint.y };
-//    double SliceX = Vector.x / Vector.y;
-//    double CurrentX = HigherPoint.x;
-//
-//    int Vertical = ceil(LowerPoint.y);
-//    for (int y = (int)(HigherPoint.y); y <= Vertical; y++) {
-//        xCoords.push_back((int)(CurrentX));
-//        CurrentX += SliceX;
-//    }
-//    return xCoords;
-//}
+void DrawLine(SDL_Renderer* renderer, vec2 Point1, vec2 Point2) {
+    vec2 Travel = { Point2.x - Point1.x, Point2.y - Point1.y };
+    double Distance = GetDistance(Travel);
+    vec2 Slice = { Travel.x / Distance, Travel.y / Distance };
+
+    int Iterations = int(Distance + 1);
+    for (int i = 0; i < Iterations; i++) {
+        vec2 CurrentPoint = { Point1.x + Slice.x * i, Point1.y + Slice.y * i };
+        SDL_RenderDrawPoint(renderer, int(std::round(CurrentPoint.x)), int(std::round(CurrentPoint.y)));
+    }
+    SDL_RenderDrawPoint(renderer, int(std::round(Point2.x)), int(std::round(Point2.y)));
+}
+
+void DrawTriangle(SDL_Renderer* renderer, Triangle& triangle) {
+    DrawLine(renderer, triangle.m_aPoints[0], triangle.m_aPoints[1]);
+    DrawLine(renderer, triangle.m_aPoints[1], triangle.m_aPoints[2]);
+    DrawLine(renderer, triangle.m_aPoints[2], triangle.m_aPoints[0]);
+}
 
 std::vector<int> Interpolate(const vec2& Point1, const vec2& Point2) {
     std::vector<int> xCoords;
@@ -351,14 +350,15 @@ int main() {
                 PointScale(ProjectedTriangle.m_aPoints[1], 0.5 * DisplayWidth, 0.5 * DisplayHeight);
                 PointScale(ProjectedTriangle.m_aPoints[2], 0.5 * DisplayWidth, 0.5 * DisplayHeight);
 
-                ColorRGB CubeColor = HSVtoRGB({(double) SDL_GetTicks() / 10.0, 0.5, Light});
-                SDL_SetRenderDrawColor(Renderer, CubeColor.r, CubeColor.g, CubeColor.b, 255);
+                ColorRGB Color = HSVtoRGB({(double) SDL_GetTicks() / 10.0, 0.5, Light});
+                SDL_SetRenderDrawColor(Renderer, Color.r, Color.g, Color.b, 255);
                 FillTriangle(Renderer, ProjectedTriangle);
-                // SDL_SetRenderDrawColor(Renderer, 255, 0, 0, 255);
-                // DrawTriangle(Renderer, ProjectedTriangle);
+
+                Color = HSVtoRGB({(double) SDL_GetTicks() / 10.0, 1.0, Light});
+                SDL_SetRenderDrawColor(Renderer, Color.r, Color.g, Color.b, 255);
+                DrawTriangle(Renderer, ProjectedTriangle);
             }
         }
-
 
         SDL_SetRenderTarget(Renderer, nullptr);
         SDL_RenderCopy(Renderer, Texture, nullptr, nullptr);
