@@ -114,16 +114,16 @@ void PointApplyMatrix(vec3& PointIn, vec3& PointOut, Matrix& matrix) {
         PointOut.x /= w; PointOut.y /= w; PointOut.z /= w;
 }
 
-// void DrawLine(SDL_Renderer* renderer, double x1, double y1, double x2, double y2) {
-//     SDL_RenderDrawLine(renderer, (int)(x1), (int)(y1), (int)(x2), (int)(y2));
-// }
-
 double GetDistance(vec2 Vector) {
     return std::sqrt(std::pow(Vector.x, 2) + std::pow(Vector.y, 2));
 }
 
 double GetDistance(vec2 Point1, vec2 Point2) {
     return std::sqrt(std::pow(Point2.x - Point1.x, 2) + std::pow(Point2.y - Point1.y, 2));
+}
+
+double GetDistance(vec3 Vector) {
+    return std::sqrt(std::pow(Vector.x, 2) + std::pow(Vector.y, 2) + std::pow(Vector.z, 2));
 }
 
 void DrawLine(SDL_Renderer* renderer, vec2 Point1, vec2 Point2) {
@@ -323,15 +323,15 @@ int main() {
             normal.y = start.z * end.x - start.x * end.z;
             normal.z = start.x * end.y - start.y * end.x;
 
-            double NormalLength = std::sqrt(std::pow(normal.x, 2) + std::pow(normal.y, 2) + std::pow(normal.z, 2));
+            double NormalLength = GetDistance(normal);
             normal.x /= NormalLength;
             normal.y /= NormalLength;
             normal.z /= NormalLength;
 
-            double MagicNumberIDKWhatItDoes = normal.x * (MovedTrianglePlane.points[0].x - Camera.x) +
+            double MagicNumberIfTriangleIsVisibleOrNot = normal.x * (MovedTrianglePlane.points[0].x - Camera.x) +
                 normal.y * (MovedTrianglePlane.points[0].y - Camera.y) +
                 normal.z * (MovedTrianglePlane.points[0].z - Camera.z);
-            if (MagicNumberIDKWhatItDoes <= 0.0) {
+            if (MagicNumberIfTriangleIsVisibleOrNot <= 0.0) {
                 double Light = normal.x * LightDirection.x +
                                 normal.y * LightDirection.y +
                                 normal.z * LightDirection.z;

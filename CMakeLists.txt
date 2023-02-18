@@ -26,5 +26,5 @@ function(copy_files SOURCE_DIR DEST_DIR)
     endforeach()
 endfunction()
 
-copy_files(${CMAKE_CURRENT_SOURCE_DIR}/bin ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
+copy_files(${CMAKE_CURRENT_SOURCE_DIR}/bin ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 # Add automatic shortcut pls
